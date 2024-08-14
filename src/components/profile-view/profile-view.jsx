@@ -7,20 +7,24 @@ import { ProfileDelete } from "./delete-account";
 
 export const ProfileView = ({ movies }) => {
   const [favoriteMovies, setFavoriteMovies] = useState([]);
-  const [user, setUser] = useState();
+  const [user, setUser] = useState(); 
   const token = localStorage.getItem('token');
-  const storedUser = JSON.parse(localStorage.getItem('user'));
+  console.log("Token before fetching user data:", token); 
   
   useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    console.log("Stored user before checking:", storedUser);
+
     const fetchUserData = async () => {
-      if (!storedUser.Username) {
+      if (!storedUser || !storedUser.user || !storedUser.user.Username) {
         console.error('No username found in local storage');
         return;
       }
 
+      console.log(`Fetching data for user: ${storedUser.user.Username}, token: ${token}`);
+
       try {
-        console.log(`Fetching data for user: ${storedUser.Username}`);
-        const response = await fetch(`https://jp-movies-flix-9cb054b3ade2.herokuapp.com/users/${storedUser.Username}`, {
+        const response = await fetch(`https://jp-movies-flix-9cb054b3ade2.herokuapp.com/users/${storedUser.user.Username}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -31,31 +35,34 @@ export const ProfileView = ({ movies }) => {
         console.log('Response: ', response);
 
         if (!response.ok) {
+          if (response.status === 401) {
+            console.error('Unauthorized - token may be invalid or expired');
+          }
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
         console.log('Fetched user data:', data);
 
-        if (data) {
-          setUser(data);
-          setFavoriteMovies(data.FavoriteMovies || []); // Check if the key is correct
-        } else {
-          console.error('User data is null or malformed');
-        }
+        setUser(data);
+        setFavoriteMovies(data.FavoriteMovies || []);
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     };
 
-    fetchUserData();
+    if (storedUser && storedUser.user && storedUser.user.Username) {
+      fetchUserData();
+    } else {
+      console.log("fetchUserData was not called because the username or user object is missing");
+    }
   }, [token]);
 
   const handleUpdatedUser = (updatedData) => {
     setUser(updatedData);
   };
 
-  if (!user) return <div>Loading...</div>;
+  if (!user) return <div>Loading...</div>; 
 
   return (
     <Container fluid className="p-0">
@@ -79,6 +86,7 @@ export const ProfileView = ({ movies }) => {
               />
               <ProfileDelete
                 user={user}
+                setUser={setUser}
                 token={token}
               />
             </Card.Body>
@@ -93,7 +101,7 @@ export const ProfileView = ({ movies }) => {
                 user={user}
                 setUser={setUser}
                 favoriteMovies={favoriteMovies}
-                setFavoriteMovies={setFavoriteMovies} // Pass the setFavoriteMovies function
+                setFavoriteMovies={setFavoriteMovies}
                 movies={movies} />
             </Card.Body>
           </Card>

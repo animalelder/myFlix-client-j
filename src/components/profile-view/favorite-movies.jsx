@@ -14,7 +14,7 @@ export const FavoriteMovies = ({ user, setUser, favoriteMovies, setFavoriteMovie
 
   const removeFromFavorite = (movieId) => {
     fetch(
-      `https://jp-movies-flix-9cb054b3ade2.herokuapp.com/users/${storedUser.Username}/movies/${movieId}`,
+      `https://jp-movies-flix-9cb054b3ade2.herokuapp.com/users/${storedUser.user.Username}/movies/${movieId}`,
       {
         method: "DELETE",
         headers: {

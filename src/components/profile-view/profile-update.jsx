@@ -27,7 +27,7 @@ export const ProfileUpdate = ({ user, updatedUser }) => {
     console.log("Data to be sent:", data); // Add this line to log the data
     console.log("Token:", token);
 
-    fetch(`https://jp-movies-flix-9cb054b3ade2.herokuapp.com/users/${storedUser.Username}`, {
+    fetch(`https://jp-movies-flix-9cb054b3ade2.herokuapp.com/users/${storedUser.user.Username}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
