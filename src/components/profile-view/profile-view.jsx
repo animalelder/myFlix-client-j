@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card } from "react-bootstrap";
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Card } from 'react-bootstrap';
 import { UserInfo } from './user-info';
 import { ProfileUpdate } from './profile-update';
 import FavoriteMovies from './favorite-movies';
-import { ProfileDelete } from "./delete-account";
+import { ProfileDelete } from './delete-account';
 
-export const ProfileView = ({ movies, syncUser }) => {
+export const ProfileView = ({ movies, syncUser, onLoggedOut }) => {
   const [favoriteMovies, setFavoriteMovies] = useState([]);
   const [user, setUser] = useState();
   const token = localStorage.getItem('token');
   const storedUser = JSON.parse(localStorage.getItem('user'));
-  
+
   useEffect(() => {
     const fetchUserData = async () => {
       if (!storedUser.Username) {
@@ -20,11 +20,11 @@ export const ProfileView = ({ movies, syncUser }) => {
 
       try {
         console.log(`Fetching data for user: ${storedUser.Username}`);
-        const response = await fetch(`https://jp-movies-flix-9cb054b3ade2.herokuapp.com/users/${storedUser.Username}`, {
+        const response = await fetch(`https://jp-movies-flix-9cb054b3ade2.herokuapp.com/${storedUser.Username}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -58,43 +58,35 @@ export const ProfileView = ({ movies, syncUser }) => {
   if (!user) return <div>Loading...</div>;
 
   return (
-    <Container fluid className="p-0">
-      <Row className="no-gutters">
-        <Col md={6} className="p-2">
+    <Container fluid className='p-0'>
+      <Row className='no-gutters'>
+        <Col md={6} className='p-2'>
           <Card>
             <Card.Body>
-              <UserInfo 
-                email={user.Email}
-                name={user.Username} />
+              <UserInfo email={user.Email} name={user.Username} />
             </Card.Body>
           </Card>
         </Col>
-        <Col md={6} className="p-2">
+        <Col md={6} className='p-2'>
           <Card>
             <Card.Body>
-              <ProfileUpdate
-                user={user}
-                token={token}
-                updatedUser={handleUpdatedUser}
-              />
-              <ProfileDelete
-                user={user}
-                token={token}
-              />
+              <ProfileUpdate user={user} token={token} updatedUser={handleUpdatedUser} />
+              <ProfileDelete user={user} token={token} onLoggedOut={onLoggedOut} />
             </Card.Body>
           </Card>
         </Col>
       </Row>
       <Row>
-        <Col md={12} className="p-2">
+        <Col md={12} className='p-2'>
           <Card>
             <Card.Body>
-              <FavoriteMovies 
+              <FavoriteMovies
                 user={user}
                 setUser={setUser}
                 favoriteMovies={favoriteMovies}
                 setFavoriteMovies={setFavoriteMovies} // Pass the setFavoriteMovies function
-                movies={movies} />
+                movies={movies}
+              />
             </Card.Body>
           </Card>
         </Col>

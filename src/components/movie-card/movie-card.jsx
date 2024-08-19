@@ -1,20 +1,20 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Button, Card } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Button, Card } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 export const MovieCard = ({ movie, user, setUser }) => {
   const isFavorite = user.FavoriteMovies.includes(movie.id);
 
   const addToFavorite = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     try {
       const response = await fetch(
-        `https://jp-movies-flix-9cb054b3ade2.herokuapp.com/users/${user.Username}/movies/${movie.id}`,
+        `https://jp-movies-flix-9cb054b3ade2.herokuapp.com/${user.Username}/movies/${movie.id}`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         }
@@ -26,23 +26,23 @@ export const MovieCard = ({ movie, user, setUser }) => {
 
       const updatedUser = await response.json();
       setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      console.log("Movie added to favorites");
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      console.log('Movie added to favorites');
     } catch (error) {
-      console.error("Error adding movie to favorites", error);
+      console.error('Error adding movie to favorites', error);
       alert(`Error: ${error.message}`);
     }
   };
 
   const removeFromFavorite = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     try {
       const response = await fetch(
-        `https://jp-movies-flix-9cb054b3ade2.herokuapp.com/users/${user.Username}/movies/${movie.id}`,
+        `https://jp-movies-flix-9cb054b3ade2.herokuapp.com/${user.Username}/movies/${movie.id}`,
         {
-          method: "DELETE",
+          method: 'DELETE',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         }
@@ -54,29 +54,31 @@ export const MovieCard = ({ movie, user, setUser }) => {
 
       const updatedUser = await response.json();
       setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      console.log("Movie removed from favorites");
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      console.log('Movie removed from favorites');
     } catch (error) {
-      console.error("Error removing movie from favorites", error);
+      console.error('Error removing movie from favorites', error);
       alert(`Error: ${error.message}`);
     }
   };
 
   return (
-    <Card className="h-100">
-      <Card.Img variant="top" src={movie.ImageURL} />
+    <Card className='h-100'>
+      <Card.Img variant='top' src={movie.ImageURL} />
       <Card.Body>
-        <Card.Title><h2>{movie.Title}</h2></Card.Title>
+        <Card.Title>
+          <h2>{movie.Title}</h2>
+        </Card.Title>
         <Card.Text>{movie.Director.Name}</Card.Text>
         <Link to={`/movies/${encodeURIComponent(movie.id)}`}>
-          <Button variant="secondary">Open</Button>
+          <Button variant='secondary'>Open</Button>
         </Link>
         {isFavorite ? (
-          <Button variant="danger" onClick={removeFromFavorite}>
+          <Button variant='danger' onClick={removeFromFavorite}>
             Remove Favorite
           </Button>
         ) : (
-          <Button variant="green" className="btn-green" onClick={addToFavorite}>
+          <Button variant='green' className='btn-green' onClick={addToFavorite}>
             Add Favorite
           </Button>
         )}
